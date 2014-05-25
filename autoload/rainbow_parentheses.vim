@@ -1,27 +1,14 @@
-"==============================================================================
 "  Description: Rainbow colors for parentheses, based on rainbow_parenthsis.vim
 "               by Martin Krischik and others.
 "               2011-10-12: Use less code.  Leave room for deeper levels.
 "==============================================================================
 
 let s:pairs = [
-	\ ['brown',       'RoyalBlue3'],
-	\ ['Darkblue',    'SeaGreen3'],
-	\ ['darkgray',    'DarkOrchid3'],
-	\ ['darkgreen',   'firebrick3'],
-	\ ['darkcyan',    'RoyalBlue3'],
-	\ ['darkred',     'SeaGreen3'],
-	\ ['darkmagenta', 'DarkOrchid3'],
-	\ ['brown',       'firebrick3'],
-	\ ['gray',        'RoyalBlue3'],
-	\ ['black',       'SeaGreen3'],
-	\ ['darkmagenta', 'DarkOrchid3'],
-	\ ['Darkblue',    'firebrick3'],
-	\ ['darkgreen',   'RoyalBlue3'],
-	\ ['darkcyan',    'SeaGreen3'],
-	\ ['darkred',     'DarkOrchid3'],
-	\ ['red',         'firebrick3'],
-	\ ]
+  \ ['darkcyan', 'none',    'SeaGreen3', 'none'],
+  \ ['darkred', 'none',    'DarkOrchid3', 'none'],
+  \ ['red', 'none', 'firebrick3', 'none'],
+  \ ['none', 'none', 'none', 'none'],
+  \ ]
 let s:pairs = exists('g:rbpt_colorpairs') ? g:rbpt_colorpairs : s:pairs
 let s:max = exists('g:rbpt_max') ? g:rbpt_max : max([len(s:pairs), 16])
 let s:loadtgl = exists('g:rbpt_loadcmd_toggle') ? g:rbpt_loadcmd_toggle : 0
@@ -38,9 +25,24 @@ endfunc
 cal s:extend()
 
 func! rainbow_parentheses#activate()
-	let [id, s:active] = [1, 1]
-	for [ctermfg, guifg] in s:pairs
-		exe 'hi default level'.id.'c ctermfg='.ctermfg.' guifg='.guifg
+	let [id, s:active, changed] = [1, 1, 0]
+	for [ctermfg, ctermbg, guifg, guibg] in s:pairs
+		let exe_string = ''
+		if ctermfg != 'none'
+			let exe_string = exe_string.' ctermfg='.ctermfg
+		endif
+		if ctermbg != 'none'
+			let exe_string = exe_string.' ctermbg='.ctermbg
+		endif
+		if guifg != 'none'
+			let exe_string = exe_string.' guifg='.guifg
+		endif
+		if guibg != 'none'
+			let exe_string = exe_string.' guibg='.guibg
+		endif
+    if exe_string != ''
+      exe 'hi default level'.id.'c '.exe_string
+    endif
 		let id += 1
 	endfor
 endfunc
